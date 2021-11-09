@@ -19,7 +19,7 @@ function startQuizz() {
 }
 
 function initializeQuestions() {
-    // TODO (là, j'ai fait un mock dégueu)
+    // TODO récupérer les questions depuis une BDD (là, j'ai fait un mock dégueu)
     var questions = [
         {
             "id": "0001",
@@ -91,34 +91,44 @@ function printNavButtons(position, limit) {
 function printAQuestion(question, domElement) {
     // Mélanger les réponses dans une seule liste
     answers = []
+    i = 0
     question.goodAnswers.forEach(element => {
         answers.push({
+            "id" : i, //FIXME : la réponse 0 est forcément bonne. C'est pas foufou -> hash
             "value" : element,
-            "isGood" : true
         })
+        i ++
     });
     question.wrongAnswers.forEach(element => {
         answers.push({
+            "id" : i,
             "value" : element,
-            "isGood" : false
         })
+        i ++
     });
-    answers.sort(() => Math.random() - 0.5) // TODO : vérifier si ça fait bien le taff
+    // prendre la liste des réponses, la copier dans un ordre random, et afficher la copie
+    randomizedAnswer=[...answers]
+    randomizedAnswer.sort(() => Math.random() - 0.5) 
 
     str  = "<div class='question' id = " + question.id + ">"
     str += "<h2>" + question.question + "</h2>"
+    str += "<p>Nombre de réponses attendues : " + question.goodAnswers.length + "<p>"
     str += "<ol>"
 
-    answers.forEach(element => {
-        str += "<li>"
+    // Afficher les questions
+    randomizedAnswer.forEach(element => {
+        // str += "<li>"
+        str += "<li><input id='" + element.id + "' type='checkbox' ><label>"
         str += element.value
-        str += "</li>"
+        str += "</label></li><br>"
+        // str += "</li>"
     });
+
+    // TODO : sauvegarder l'état des checkboxes, dans handleQuestionsPrinting
+
 
     str += "</ol>"
     str += "</div>"
-
-    // TODO : ajouter les bouttons vers questions précédente/suivant ?
 
     domElement.innerHTML = str
 }
