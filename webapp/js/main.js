@@ -1,3 +1,5 @@
+questions = [] // scope:global
+
 function drawStartPage() {
     page = document.getElementById("quizz");
 
@@ -5,11 +7,15 @@ function drawStartPage() {
 }
 
 function startQuizz() {
+    // Créer la navbav
+    target = document.getElementById("quizz");
+    target.insertAdjacentHTML('beforebegin', "<div id='nav'></div>");
+
     // 1 : initialiser la liste des questions
     questions = initializeQuestions();
 
-    // Afficher la première question
-    printAQuestion(questions[0], document.getElementById("quizz"))
+    // Afficher les questions, en commençant par la 1ère
+    handleQuestionsPrinting(0)
 }
 
 function initializeQuestions() {
@@ -57,8 +63,29 @@ function initializeQuestions() {
     return questions
 }
 
-function handleQuestionsPrinting(questions) {
+function handleQuestionsPrinting(position) {
     // reçoit une liste de questions, et imprime la question + boutons de nav
+
+    // imprimer la 1ère question
+    printNavButtons(position, questions.length)
+    printAQuestion(questions[position], document.getElementById("quizz"))
+}
+
+function printNavButtons(position, limit) {
+    str = "Question " + (position + 1) + " / " + limit + "<br>" 
+    if (position > 0) {
+        str += "<a onclick='handleQuestionsPrinting("+ (position - 1) + ")'>q? précédente</a>"
+    }
+
+    if (position > 0 && position < limit){
+        str += " ; "
+    }
+
+    if (position < limit - 1) {
+        str += "<a onclick='handleQuestionsPrinting("+ (position + 1) + ")'>q? suivante</a>"
+    }
+
+    document.getElementById("nav").innerHTML = str
 }
 
 function printAQuestion(question, domElement) {
