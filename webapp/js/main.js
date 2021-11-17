@@ -1,4 +1,5 @@
 questions = [] // scope:global
+savedAnswers = [] // scope:global
 
 function drawStartPage() {
     page = document.getElementById("quizz");
@@ -7,15 +8,15 @@ function drawStartPage() {
 }
 
 function startQuizz() {
-    // Créer la navbav
+    // create navbar
     target = document.getElementById("quizz");
     target.insertAdjacentHTML('beforebegin', "<div id='nav'></div>");
 
-    // 1 : initialiser la liste des questions
+    // 1 : initialize the list of questions
     questions = initializeQuestions();
 
-    // Afficher les questions, en commençant par la 1ère
-    handleQuestionsPrinting(0)
+    // print the questions, start by the first one
+    handleQuestionsPrinting(0, true)
 }
 
 function initializeQuestions() {
@@ -63,12 +64,79 @@ function initializeQuestions() {
     return questions
 }
 
-function handleQuestionsPrinting(position) {
+function handleQuestionsPrinting(position, isFirstCall=false) { 
+    //FIXME : le nom est pas top, parce qu'on fait plus qu'imprimer
     // reçoit une liste de questions, et imprime la question + boutons de nav
+    // gère aussi l'état (save/load) des cases cochées/décochées
 
-    // imprimer la 1ère question
+    //première action = sauvegarder l'état des checkboxes (si on est sur une question)
+    if (!isFirstCall) {
+        saveAnwsers()
+    }
+
     printNavButtons(position, questions.length)
     printAQuestion(questions[position], document.getElementById("quizz"))
+
+    loadSavedAnwsers(questions[position].id)
+}
+
+function saveAnwsers() {
+    // Récupérer l'ID de la question
+    q_id = document.getElementsByClassName("question")[0].id
+    // Récupérer la liste des réponses : id, état de la checkbox
+    answsers = document.getElementsByClassName("question")[0].getElementsByTagName("input")
+    savedAns = []
+    for (el of answsers) {
+        savedAns.push(
+            {
+                "id" : el.id,
+                "checked" : el.checked
+            }
+        )
+    }
+    objQ = {
+        "id" : q_id,
+        "answers" : savedAns
+    }
+
+    // Sauvegarder (erase/replace)
+    index = -1
+    doReplace = false
+    for (el of savedAnswers) {
+        index ++
+        if (el.id == q_id){
+            // Erase
+            doReplace = true
+            break
+        }
+    }
+    if(doReplace){
+        savedAnswers.splice(index, 1, objQ)
+    } else {
+        savedAnswers.push(objQ) 
+    }
+}
+
+function loadSavedAnwsers(q_id) {
+    index = -1
+    isFound = false
+    for (el of savedAnswers) {
+        index ++
+        if (el.id == q_id){
+            isFound = true
+            break
+        }
+    }
+
+    if (isFound){
+        // pour chaque réponse sauvegardée
+        // charger l'état de la checkbox
+
+        savedAnswers[index].answers.forEach(
+            ans => document.getElementById(ans.id).checked = ans.checked
+        );
+
+    }
 }
 
 function printNavButtons(position, limit) {
@@ -78,14 +146,22 @@ function printNavButtons(position, limit) {
     }
 
     if (position > 0 && position < limit){
-        str += " ; "
+        str += " | "
     }
 
     if (position < limit - 1) {
         str += "<a onclick='handleQuestionsPrinting("+ (position + 1) + ")'>q? suivante</a>"
     }
 
+    str += " | <button type=\"submit\" id=\"submit\" onclick=\"submitAnswer()\">Valider mes réponses</button>"
+
     document.getElementById("nav").innerHTML = str
+}
+
+function submitAnswer() {
+    console.log("TODO : vérification des réponses")
+    // TODO 
+    // alertbox : "t'es sûr ?"
 }
 
 function printAQuestion(question, domElement) {
@@ -94,14 +170,14 @@ function printAQuestion(question, domElement) {
     i = 0
     question.goodAnswers.forEach(element => {
         answers.push({
-            "id" : i, //FIXME : la réponse 0 est forcément bonne. C'est pas foufou -> hash
+            "id" : "ans_" + i, //FIXME : la réponse 0 est forcément bonne. C'est pas foufou -> hash
             "value" : element,
         })
         i ++
     });
     question.wrongAnswers.forEach(element => {
         answers.push({
-            "id" : i,
+            "id" : "ans_" + i,
             "value" : element,
         })
         i ++
@@ -123,9 +199,6 @@ function printAQuestion(question, domElement) {
         str += "</label></li><br>"
         // str += "</li>"
     });
-
-    // TODO : sauvegarder l'état des checkboxes, dans handleQuestionsPrinting
-
 
     str += "</ol>"
     str += "</div>"
