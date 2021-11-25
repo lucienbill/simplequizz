@@ -219,6 +219,7 @@ function checkAnswers(answers) {
     nb_good_answers = 0
     // parcourir toutes les questions
     for (q of questions) {
+        console.log(q.question) //DEBUG
         // vérifier s'il existe une réponse
         let isFound = false
         let index = -1
@@ -229,6 +230,9 @@ function checkAnswers(answers) {
                 break
             }
         }
+
+        msg = "réponses trouvées ? " + isFound //DEBUG
+        console.log(msg) //DEBUG
 
         // "ans_" + element.hashCode()
         if (isFound){
@@ -247,12 +251,16 @@ function checkAnswers(answers) {
             q.goodAnswers.forEach(element => {
                 correctAnswers.push("ans_" + element.hashCode())
             });
-    
-            correctAnswers.sort()
- 
+     
             // compare arrays (this is slow, but fast enough)
-            if (JSON.stringify(checkedAnswers)==JSON.stringify(correctAnswers)){
+            if (JSON.stringify(checkedAnswers.sort())==JSON.stringify(correctAnswers.sort())){
                 nb_good_answers ++
+                console.log("réponse : OK")
+            } else { //DEBUG
+                console.log("réponse données = ")
+                console.log(checkedAnswers)
+                console.log("réponses correctes = ")
+                console.log(correctAnswers)
             }
         }
 
