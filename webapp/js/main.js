@@ -1,27 +1,38 @@
-questions = [] // scope:global
-savedAnswers = [] // scope:global
+let questions = [] // scope:global
+let savedAnswers = [] // scope:global
+let victoryThreshold = 0.5 //scope:global
 
 function drawStartPage() {
-    page = document.getElementById("quizz");
-
-    page.innerHTML = "<button type=\"button\" id=\"start\" onclick=\"startQuizz()\">Démarrer le quizz</button>"
+    const startBtn = document.createElement("button")
+    startBtn.id = "start"
+    startBtn.type = "button"
+    startBtn.onclick = () => {startQuizz()}
+    startBtn.textContent = "Démarrer le quizz"
+    document.getElementById("quizz").appendChild(startBtn)
 }
 
 function startQuizz() {
     // create navbar
-    target = document.getElementById("quizz");
-    target.insertAdjacentHTML('beforebegin', "<div id='nav'></div>");
+    drawNavbar()
 
     // 1 : initialize the list of questions
     questions = initializeQuestions();
+    victoryThreshold = 0.5 //FIXME : chercher cette valeur en paramétrage/BDD
 
     // print the questions, start by the first one
-    handleQuestionsPrinting(0, true)
+    handleAQuestion(0)
+}
+
+function drawNavbar() {
+    let target = document.getElementById("header");
+    const navbar = document.createElement("div")
+    navbar.id = "nav"
+    target.appendChild(navbar)
 }
 
 function initializeQuestions() {
     // TODO récupérer les questions depuis une BDD (là, j'ai fait un mock dégueu)
-    var questions = [
+    let questions = [
         {
             "id": "0001",
             "question": "combien font 2 et 2",
@@ -66,7 +77,7 @@ function initializeQuestions() {
 
 String.prototype.hashCode = function() {
     // source : https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
-    var hash = 0, i, chr;
+    let hash = 0, i, chr;
     if (this.length === 0) return hash;
     for (i = 0; i < this.length; i++) {
       chr   = this.charCodeAt(i);
@@ -76,31 +87,35 @@ String.prototype.hashCode = function() {
     return hash;
   };
 
-function handleQuestionsPrinting(position, isFirstCall=false) { 
-    //FIXME : le nom est pas top, parce qu'on fait plus qu'imprimer
-    // reçoit une liste de questions, et imprime la question + boutons de nav
+function handleAQuestion(position) { 
+    // imprime une question et les boutons de nav
     // gère aussi l'état (save/load) des cases cochées/décochées
 
     //première action = sauvegarder l'état des checkboxes (si on est sur une question)
-    if (!isFirstCall) {
+    if (document.getElementsByClassName("question").length > 0) {
         saveAnwsers()
     }
 
+    // print the new question
     printNavButtons(position, questions.length)
-    printAQuestion(questions[position], document.getElementById("quizz"))
-
+    printAQuestion(questions[position])
     loadSavedAnwsers(questions[position].id)
     printSubmitButton()
 }
 
 function printSubmitButton() {
-    let myButton = document.createElement("button")
+    const myButton = document.createElement("button")
     myButton.type = "submit"
     myButton.id = myButton.type
     myButton.onclick = () => {saveAnwsers();submitAnswer()}
     myButton.title = "Valider mes réponses"
     myButton.innerText = myButton.title
-    document.getElementById("quizz").appendChild(myButton)
+
+    let footer = document.getElementById("footer")
+
+    if (!document.getElementById("submit")){ // just print ONE submit button
+        footer.insertBefore(myButton, footer.firstChild);
+    }
 }
 
 function saveAnwsers() {
@@ -154,7 +169,6 @@ function loadSavedAnwsers(q_id) {
     if (isFound){
         // pour chaque réponse sauvegardée
         // charger l'état de la checkbox
-
         savedAnswers[index].answers.forEach(
             ans => document.getElementById(ans.id).checked = ans.checked
         );
@@ -163,67 +177,95 @@ function loadSavedAnwsers(q_id) {
 }
 
 function printNavButtons(position, limit) {
-    str = "Question " + (position + 1) + " / " + limit + "<br>" 
+    let navDiv = document.createElement("div")
+
+    // progress bar
+    const progbar = document.createElement("progress")
+    progbar.max = limit
+    progbar.value = position + 1
+    progbar.textContent = Math.floor((position + 1)*10000/limit)/100 +"%"
+    navDiv.appendChild(progbar)
+    navDiv.appendChild(document.createElement("br"))
+    
+    // Question x/n
+    navDiv.id = "nav"
+    const str = "Question " + (position + 1) + " / " + limit + " | "
+    navDiv.appendChild(document.createTextNode(str))
+    
+    // question suivante / précédente
+    const prev = " ⬅ "
+    const next = " ➡ "
     if (position > 0) {
-        str += "<a onclick='handleQuestionsPrinting("+ (position - 1) + ")'>q? précédente</a>"
-        // FIXME : remplacer tout ces str par des vrais nodes à ajouter au DOM
+        let link = document.createElement("a")
+        link.textContent = prev
+        link.onclick = () => { handleAQuestion(position - 1)}
+        link.title = "Revenir à la question précédente"
+        navDiv.appendChild(link)
+    } else {
+        navDiv.appendChild(document.createTextNode(prev))
     }
-
-    if (position > 0 && position < limit){
-        str += " | "
-    }
-
+    
+    navDiv.appendChild(document.createTextNode(" | ")) //spacer
+        
     if (position < limit - 1) {
-        str += "<a onclick='handleQuestionsPrinting("+ (position + 1) + ")'>q? suivante</a>"
+        let link = document.createElement("a")
+        link.textContent = next
+        link.onclick = () => { handleAQuestion(position + 1)}
+        link.title = "Passer à la question suivante"
+        navDiv.appendChild(link)
+    } else {
+        navDiv.appendChild(document.createTextNode(next))
     }
 
-    document.getElementById("nav").innerHTML = str
+    document.getElementById("nav").replaceWith(navDiv)
 }
 
 function submitAnswer() {
+    document.getElementById("submit").remove()
+
     // Print confirmation message
     let msg = "Confirmez-vous la validation de toutes les réponses à ce quizz ? Vous ne pourrez pas revenir en arrière !"
 
-    let fragment = document.createDocumentFragment()
     let newDiv = document.createElement("div")
     newDiv.class = "confirm-submit"
     newDiv.id = "quizz"
 
     let msgElem = document.createTextNode(msg)
     newDiv.appendChild(msgElem)
+    newDiv.appendChild(document.createElement("br"))
 
     // Yes/No buttons
     let yesBtn = document.createElement("button")
     yesBtn.id = "yes"
-    yesBtn.textContent = "confirmer"
+    yesBtn.textContent = "✅ confirmer"
     yesBtn.onclick = () => { checkAnswers(savedAnswers)}
     newDiv.appendChild(yesBtn)
+    newDiv.appendChild(document.createElement("br"))
     
     let noBtn = document.createElement("button")
     noBtn.id = "no"
-    noBtn.textContent = "revenir aux questions"
+    noBtn.textContent = "⏪ revenir aux questions"
     noBtn.onclick = () => { reprintQuizz() }
     newDiv.appendChild(noBtn)
 
     // erase quizz and replace
-    document.getElementById("nav").hidden = true
+    document.getElementById("nav").remove()
     document.getElementById("quizz").replaceWith(newDiv)
 }
 
 function reprintQuizz() {
-    handleQuestionsPrinting(0, true)
-    document.getElementById("nav").hidden = false
+    drawNavbar()
+    handleAQuestion(0)
 }
 
 function checkAnswers(answers) {
     nb_good_answers = 0
     // parcourir toutes les questions
     for (q of questions) {
-        console.log(q.question) //DEBUG
         // vérifier s'il existe une réponse
         let isFound = false
         let index = -1
-        for (ans of savedAnswers) {
+        for (ans of answers) {
             index ++
             if (ans.id == q.id){
                 isFound = true
@@ -231,15 +273,11 @@ function checkAnswers(answers) {
             }
         }
 
-        msg = "réponses trouvées ? " + isFound //DEBUG
-        console.log(msg) //DEBUG
-
-        // "ans_" + element.hashCode()
         if (isFound){
             // si la réponse est correcte : 1 pt
             // 1 : ordonner l'array des ID des cases cochées : alpha 
             checkedAnswers = []
-            savedAnswers[index].answers.forEach(
+            answers[index].answers.forEach(
                 element => {
                     if (element.checked){
                         checkedAnswers.push(element.id)
@@ -255,22 +293,16 @@ function checkAnswers(answers) {
             // compare arrays (this is slow, but fast enough)
             if (JSON.stringify(checkedAnswers.sort())==JSON.stringify(correctAnswers.sort())){
                 nb_good_answers ++
-                console.log("réponse : OK")
-            } else { //DEBUG
-                console.log("réponse données = ")
-                console.log(checkedAnswers)
-                console.log("réponses correctes = ")
-                console.log(correctAnswers)
             }
         }
 
 
     }
 
-    printResults(nb_good_answers, questions.length)
+    printResults(nb_good_answers, questions.length, victoryThreshold)
 }
 
-function printResults(nb_good_answers, nb_questions) {
+function printResults(nb_good_answers, nb_questions, victoryThreshold=0.5) {
     let msg = "bonnes réponses : " + nb_good_answers + "/" + nb_questions
     let newDiv = document.createElement("div")
     newDiv.class = "results"
@@ -278,11 +310,29 @@ function printResults(nb_good_answers, nb_questions) {
 
     txt = document.createTextNode(msg)
     newDiv.appendChild(txt)
+
+    const progbar = document.createElement("progress")
+    progbar.max = nb_questions
+    progbar.value = nb_good_answers
+    const txok = Math.floor(nb_good_answers*10000/nb_questions)/100
+    progbar.textContent = txok + "%"
+    newDiv.appendChild(document.createElement("br"))
+    newDiv.appendChild(progbar)
+    newDiv.appendChild(document.createElement("br"))
+
+    // "gagné !" ou "perdu !"
+    let str = ""
+    if (txok/100 >= victoryThreshold) {
+        str = "✅ Bravo ! vous avez gagné ( " + txok + "% de bonnes réponses) !"
+    } else {
+        str = "❌ Perdu ( " + txok + "% de bonnes réponses) ! Vous ferez mieux la prochaine fois."
+    }
+    newDiv.appendChild(document.createTextNode(str))
+
     document.getElementById("quizz").replaceWith(newDiv)
-    // FIXME : ajouter un "gagné !" ou "perdu !"
 }
 
-function printAQuestion(question, domElement) {
+function printAQuestion(question) {
     // Mélanger les réponses dans une seule liste
     answers = []
     i = 0
@@ -304,24 +354,37 @@ function printAQuestion(question, domElement) {
     randomizedAnswer=[...answers]
     randomizedAnswer.sort(() => Math.random() - 0.5) 
 
-    str  = "<div class='question' id = " + question.id + ">"
-    str += "<h2>" + question.question + "</h2>"
-    str += "<p>Nombre de réponses attendues : " + question.goodAnswers.length + "<p>"
-    str += "<ol>"
+    const qst = document.createElement("div")
+    qst.id = question.id
+    qst.className = "question"
+    
+    const title = document.createElement("h2")
+    title.textContent = question.question
+    qst.appendChild(title)
+    
+    const hint = document.createElement("p")
+    hint.textContent = "Nombre de réponses attendues : " + question.goodAnswers.length
+    qst.appendChild(hint)
 
-    // Afficher les questions
+    const ans = document.createElement("ol")
+
+    // Afficher les réponses
     randomizedAnswer.forEach(element => {
-        // str += "<li>"
-        str += "<li><input id='" + element.id + "' type='checkbox' ><label>"
+        let str = "<input id='" + element.id + "' type='checkbox' ><label>"
         str += element.value
-        str += "</label></li><br>"
-        // str += "</li>"
+        str += "</label><br>"
+
+        let li = document.createElement("li")
+        li.innerHTML = str
+        ans.appendChild(li)
     });
 
-    str += "</ol>"
-    str += "</div>"
+    qst.appendChild(ans)
+    const quizzDiv = document.createElement("div")
+    quizzDiv.id = "quizz"
+    quizzDiv.appendChild(qst)
 
-    domElement.innerHTML = str
+    document.getElementById("quizz").replaceWith(quizzDiv)
 }
 
 drawStartPage();
