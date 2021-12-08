@@ -60,7 +60,6 @@ function handleAQuestion(position) {
 }
 
 function printFooter(position, limit) {
-    console.log(position) //DEBUG
     const footerDiv = document.createElement("div")
     footerDiv.id = "footerNavButtons"
 
