@@ -100,22 +100,59 @@ function handleAQuestion(position) {
     printNavButtons(position, questions.length)
     printAQuestion(questions[position])
     loadSavedAnwsers(questions[position].id)
-    printSubmitButton()
+    printFooter(position, questions.length)
 }
 
-function printSubmitButton() {
-    const myButton = document.createElement("button")
-    myButton.type = "submit"
-    myButton.id = myButton.type
-    myButton.onclick = () => {saveAnwsers();submitAnswer()}
-    myButton.title = "Valider mes réponses"
-    myButton.innerText = myButton.title
+function printFooter(position, limit) {
+    console.log(position) //DEBUG
+    const footerDiv = document.createElement("div")
+    footerDiv.id = "footerNavButtons"
+
+    // Submit the whole quizz
+    const submitButton = document.createElement("button")
+    submitButton.type = "submit"
+    submitButton.id = submitButton.type
+    submitButton.onclick = () => {saveAnwsers();submitAnswer()}
+    submitButton.title = "✅ Valider le quizz"
+    submitButton.innerText = submitButton.title
+
+    // Next question
+    const nextQbtn = document.createElement("button")
+    nextQbtn.type = "submit"
+    nextQbtn.id = nextQbtn.type
+    if (position < limit - 1){
+        nextQbtn.onclick = () => {handleAQuestion(position + 1)} //FIXME
+        nextQbtn.title = "⏩ Valider (question suivante)"
+        nextQbtn.innerText = nextQbtn.title
+    } else {
+        nextQbtn.onclick = submitButton.onclick
+        nextQbtn.title = "⏩ Valider (fin du quizz)"
+        nextQbtn.innerText = nextQbtn.title
+    }
+
+    
+    // Previous Question
+    const prevQbtn = document.createElement("button")
+    prevQbtn.type = "submit"
+    prevQbtn.id = prevQbtn.type
+    prevQbtn.onclick = () => {handleAQuestion(position - 1)} //FIXME
+    prevQbtn.title = "⏪ Question précédente"
+    prevQbtn.innerText = prevQbtn.title
+    if (position == 0) {
+        prevQbtn.disabled = true
+    }
+
+    // Print the buttons
+    footerDiv.appendChild(prevQbtn)
+    footerDiv.appendChild(document.createTextNode(" | "))
+    footerDiv.appendChild(nextQbtn)
+    footerDiv.appendChild(document.createElement("br"))
+    footerDiv.appendChild(submitButton)
 
     let footer = document.getElementById("footer")
 
-    if (!document.getElementById("submit")){ // just print ONE submit button
-        footer.insertBefore(myButton, footer.firstChild);
-    }
+    footer.firstChild.replaceWith(footerDiv)
+    // footer.insertBefore(footerDiv, footer.firstChild);
 }
 
 function saveAnwsers() {
@@ -250,6 +287,7 @@ function submitAnswer() {
 
     // erase quizz and replace
     document.getElementById("nav").remove()
+    document.getElementById("footerNavButtons").remove()
     document.getElementById("quizz").replaceWith(newDiv)
 }
 

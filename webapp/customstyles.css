@@ -1,0 +1,9 @@
+#footerNavButtons, #start{
+    display: block;
+    margin-left: auto;
+    margin-right: auto ;
+}
+
+#start{
+    margin-top: 40px;
+}
