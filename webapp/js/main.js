@@ -30,50 +30,6 @@ function drawNavbar() {
     target.appendChild(navbar)
 }
 
-function initializeQuestions() {
-    // TODO récupérer les questions depuis une BDD (là, j'ai fait un mock dégueu)
-    let questions = [
-        {
-            "id": "0001",
-            "question": "combien font 2 et 2",
-            "goodAnswers" : [
-                "4"
-            ],
-            "wrongAnswers" : [
-                "2",
-                "22",
-                "8",
-            ]
-        },
-        {
-            "id": "0002",
-            "question": "Le chat est ...",
-            "goodAnswers" : [
-                "Un animal",
-                "vivant ou mort tant qu'on n'a pas ouvert la boite"
-            ],
-            "wrongAnswers" : [
-                "un végétal",
-                "capable d'apprendre à parler",
-            ]
-        },
-        {
-            "id": "0003",
-            "question": "JQuery, c'est :",
-            "goodAnswers" : [
-                "un vieux truc en js",
-                "un outil de développement web"
-            ],
-            "wrongAnswers" : [
-                "le futur",
-                "une sauce qui se mange",
-                "un truc à utiliser absolument pour tout nouveau projet"
-            ]
-        },
-    ]
-
-    return questions
-}
 
 String.prototype.hashCode = function() {
     // source : https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
