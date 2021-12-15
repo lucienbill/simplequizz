@@ -45,6 +45,20 @@ function initializeQuestions() {
     Un truc façon tableur.
     Bonus : pourra être rempli à partir d'un tableur
     */
+
+    const alternativeStorageMethod = [
+        {
+            "id": "Un vrai hash calculé à l'étape de build",
+            "question" : "le libellé de la question",
+            "answers" : [
+                "réponse 1",
+                "réponse 2",
+                "réponse 3",
+                "réponse 4",
+            ],
+            "solution":"hash des bonnes réponses (array.order.join('').hash)"
+        }
+    ]
     
     return questions
 }
