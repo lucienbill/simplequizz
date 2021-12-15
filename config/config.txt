@@ -1,0 +1,22 @@
+Gagner si le taux de bonnes réponses est strictement supérieur à : 66,14%
+Questions :
+Exemple de question
+    Bonne réponse N°1
+    Bonne réponse N°2
+        Mauvaise réponse N°1
+        Mauvaise réponse N°2
+Combien font 2 et 2 ?
+    4
+        2
+        22
+        8
+Le chat est ...
+    Un animal
+    Vivant ou mort tant qu'on n'a pas ouvert la boite
+        Un végétal
+        Capable d'apprendre à parler
+JQuery, c'est :
+    Un vieux truc en js
+    Un outil de développement web
+        Le futur
+        Un truc à utiliser absolument pour tout nouveau projet
