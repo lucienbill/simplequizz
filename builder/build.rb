@@ -1,10 +1,10 @@
-# Endroit où je stocke les questions
+# File where the questions are stored
 filePath = File.dirname(__FILE__) + '\..\config\config.txt'
 file = File.open(filePath)
 file_lines = file.readlines.map(&:chomp)
 
 regex_nbre = /(\d+).?(\d+)/
-# Dans main.js, c'est le victoryThreshold * 100 (parce qu'en config, on le présente en %tage)
+# In main.js, it is victoryThreshold * 100 (because it's a % in config.txt)
 taux_victoire = file_lines[0].scan(regex_nbre)[0].join(".")
 
 # Récupérer les questions, et leurs réponses (bonnes + mauvaises)
@@ -15,9 +15,11 @@ file_lines.each_with_index{|line, numline|
     regexQ = /^[^ ]/
     # Si ça commence par "    ", c'est une bonne réponse
     # regexGoodAns = /^( ){3}[^ ]/
-    beginGoodAns = "   "
+    beginGoodAns = ["   ", "	"] # 4 space or 1 tab
     # Si ça commence par "        ", c'est une mauvaise réponse
-    beginWrongAns = "      "
+    beginWrongAns = ["      ", "		"] # 8 space or 2 tab
+    # Commentaire de correction
+    beginCommentary = ["          ", "			"] # 12 space or 3 tab
     if line.start_with?(regexQ)
         questions.push(
             {
@@ -29,11 +31,15 @@ file_lines.each_with_index{|line, numline|
         )
         next
     end
-    if line.start_with?(beginWrongAns)
+    if line.start_with?(beginCommentary[0]) || line.start_with?(beginCommentary[1])
+        # TODO - feature for the future
+        next
+    end
+    if line.start_with?(beginWrongAns[0]) || line.start_with?(beginWrongAns[1])
         questions[-1]["wrongAnswers"].push(line.strip())
         next
     end
-    if line.start_with?(beginGoodAns)
+    if line.start_with?(beginGoodAns[0]) || line.start_with?(beginGoodAns[1])
         questions[-1]["goodAnswers"].push(line.strip())
         next
     end
@@ -42,7 +48,6 @@ file_lines.each_with_index{|line, numline|
 
 # Préparer le fichier à générer (js)
 strjs = "function initializeQuestions() {\n"\
-    "   // TODO récupérer les questions depuis une BDD (là, j'ai fait un mock dégueu)\n"\
     "   const questions = ["
 
 questions.map{|q|
