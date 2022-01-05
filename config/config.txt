@@ -5,6 +5,7 @@ Exemple de question
     Bonne réponse N°2
         Mauvaise réponse N°1
         Mauvaise réponse N°2
+            Commentaire de correction (optionnel, pas encore utilisé)
 Combien font 2 et 2 ?
     4
         2
