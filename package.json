@@ -4,8 +4,9 @@
   "description": "A very basic webapp to host a simple quizz (mostly vanilla JS, 100% in browser, 100% not cheat-proof)",
   "main": "index.html",
   "scripts": {
-    "start": "npx http-server ./webapp -p 8181",
-    "test": "cypress run"
+    "start-server": "npx http-server ./webapp -p 8181",
+    "test": "cypress run",
+    "ci": "start-server-and-test start-server http://localhost:8181 test"
   },
   "repository": {
     "type": "git",
