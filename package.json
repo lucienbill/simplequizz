@@ -6,7 +6,9 @@
   "scripts": {
     "start-server": "npx http-server ./webapp -p 8181",
     "test": "cypress run",
-    "ci": "start-server-and-test start-server http://localhost:8181 test"
+    "test-dev": "cypress open",
+    "ci": "start-server-and-test start-server http://localhost:8181 test",
+    "ci-dev": "start-server-and-test start-server http://localhost:8181 test-dev"
   },
   "repository": {
     "type": "git",
