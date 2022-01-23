@@ -8,7 +8,10 @@
     "test": "cypress run",
     "test-dev": "cypress open",
     "ci": "start-server-and-test start-server http://localhost:8181 test",
-    "ci-dev": "start-server-and-test start-server http://localhost:8181 test-dev"
+    "ci-dev": "start-server-and-test start-server http://localhost:8181 test-dev",
+    "build": "ruby builder/build.rb",
+    "buildthenrun": "ruby builder/build.rb & npm run start-server",
+    "ci-build": "start-server-and-test buildthenrun http://localhost:8181 test"
   },
   "repository": {
     "type": "git",
