@@ -2,3 +2,4 @@ node_modules
 cy-examples
 cypress/videos
 cypress/screenshots
+webapp/data/questions.js
