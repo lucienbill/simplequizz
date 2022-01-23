@@ -4,7 +4,8 @@
   "description": "A very basic webapp to host a simple quizz (mostly vanilla JS, 100% in browser, 100% not cheat-proof)",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx http-server ./webapp -p 8181",
+    "test": "cypress run"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/lucienbill/simplequizz#readme",
   "devDependencies": {
-    "cypress": "^9.3.1"
+    "cypress": "^9.3.1",
+    "start-server-and-test": "^1.14.0"
   }
 }
