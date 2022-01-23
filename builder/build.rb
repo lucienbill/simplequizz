@@ -1,5 +1,5 @@
 # File where the questions are stored
-filePath = File.dirname(__FILE__) + '\..\config\config.txt'
+filePath = File.dirname(__FILE__) + '/../config/config.txt'
 file = File.open(filePath)
 file_lines = file.readlines.map(&:chomp)
 
