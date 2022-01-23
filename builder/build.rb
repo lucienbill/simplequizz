@@ -77,7 +77,7 @@ strjs += "\n    ]\n\n"\
 "}"
 
 # Transformer tout ça en questions.js
-questionsDOTjsPath = File.dirname(__FILE__) + '\..\webapp\data\questions.js'
+questionsDOTjsPath = File.dirname(__FILE__) + '/../webapp/data/questions.js'
 File.delete(questionsDOTjsPath) if File.exist?(questionsDOTjsPath)
 
 File.write(questionsDOTjsPath, strjs)
