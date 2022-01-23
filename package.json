@@ -1,0 +1,27 @@
+{
+  "name": "simplequizz",
+  "version": "1.0.0",
+  "description": "A very basic webapp to host a simple quizz (mostly vanilla JS, 100% in browser, 100% not cheat-proof)",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucienbill/simplequizz.git"
+  },
+  "keywords": [
+    "quiz",
+    "quizz",
+    "vanilla"
+  ],
+  "author": "Lucien Bill (lucienbill.fr)",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/lucienbill/simplequizz/issues"
+  },
+  "homepage": "https://github.com/lucienbill/simplequizz#readme",
+  "devDependencies": {
+    "cypress": "^9.3.1"
+  }
+}
