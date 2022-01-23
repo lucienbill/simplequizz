@@ -1,11 +1,14 @@
 # File where the questions are stored
+puts "attempting to locate and open config.txt"
 filePath = File.dirname(__FILE__) + '/../config/config.txt'
 file = File.open(filePath)
 file_lines = file.readlines.map(&:chomp)
+puts "OK ; file found at #{filePath}"
+puts "parsing ..."
 
 regex_nbre = /(\d+).?(\d+)/
 # In main.js, it is victoryThreshold * 100 (because it's a % in config.txt)
-taux_victoire = file_lines[0].scan(regex_nbre)[0].join(".")
+taux_victoire = file_lines[0].scan(regex_nbre)[0].join(".") # FIXME : unused value
 
 # Récupérer les questions, et leurs réponses (bonnes + mauvaises)
 questions = []
@@ -43,8 +46,9 @@ file_lines.each_with_index{|line, numline|
         questions[-1]["goodAnswers"].push(line.strip())
         next
     end
-
 }
+puts "questions found: #{questions.length.to_s}"
+puts "formating things to write in questions.js ..."
 
 # Préparer le fichier à générer (js)
 strjs = "function initializeQuestions() {\n"\
@@ -76,10 +80,14 @@ strjs += "\n    ]\n\n"\
 "    return questions\n"\
 "}"
 
+puts "done"
+puts "writing file 'questions.js' to disk..."
+
 # Transformer tout ça en questions.js
-questionsDOTjsPath = File.dirname(__FILE__) + '/../webapp/data/questions.js'
+questionsDOTjsPath = File.expand_path(__FILE__) + '/../../webapp/data/questions.js'
 File.delete(questionsDOTjsPath) if File.exist?(questionsDOTjsPath)
 
 File.write(questionsDOTjsPath, strjs)
-
+puts "write to #{questionsDOTjsPath}"
 # TODO : nettoyer le code
+puts "OK"
